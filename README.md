@@ -10,8 +10,20 @@ When To Use FlatDB
 When you want to use SQLite to store data, just take a glance at FlatDB.<br>
 When Lua acts in your program as the major language or the embedded scripting language, just try using FlatDB.
 
+Concept
+==========
+
+|     FlatDB     |      Disk     |       Lua      |
+|:--------------:|:-------------:|:--------------:|
+| Database       | Directory     | Table          |
+| Book           | File          | Table          |
+| Key-value pair | File content  | Key-value pair |
+
+Keys and values can be all Lua types except coroutines, userdata, cdata and C functions.
+
 Usage
 ==========
+
 Copy *flatdb.lua* file to your project or where your lua libraries stored.<br>
 Then write this in any Lua file where you want to use it:
 ```lua
@@ -60,10 +72,12 @@ Quick Look
 ```lua
 local flatdb = require("flatdb")
 
--- open a directory as a database, 'db' is just a plain empty Lua table that can contain books
+-- open a directory as a database
+-- 'db' is just a plain empty Lua table that can contain books
 local db = flatdb("./db")
 
--- open or create a book named "default", it also a plain empty Lua table where key-value data stored in
+-- open or create a book named "default"
+-- it is also a plain empty Lua table where key-value pair stored in
 if not db.default then
 	db.default = {}
 end
@@ -97,11 +111,11 @@ db:guard(function(book, key, value)
 	print("CREATE KEY permission denied!")
 end)
 
--- try creating new key-value data to 'default' book
+-- try creating new key-value pair to 'default' book
 db:set("key1", 1)
 db:set("key2", 2)
 
--- update an existing key-value item
+-- update an existing key-value pair
 db:set("hello", "bye")
 
 print(db:get("key1")) -- prints nil
