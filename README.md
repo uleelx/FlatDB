@@ -19,33 +19,38 @@ local flatdb = require 'flatdb'
 ```
 
 1. Bind a directory as a database
-```lua
-local db = flatdb('./db')
-```
+
+    ```lua
+    local db = flatdb('./db')
+    ```
 
 2. Open or create a book
-```lua
-if not db.book then
-	db.book = {}
-end
-```
+
+    ```lua
+    if not db.book then
+    	db.book = {}
+    end
+    ```
 
 3. Store key-value items
-```lua
-db.book.key = 'value'
--- equivalent to db.book['key'] = 'value'
-```
+
+    ```lua
+    db.book.key = 'value'
+    -- equivalent to db.book['key'] = 'value'
+    ```
 
 4. Retrieve items
-```lua
-print(db.book.key) -- prints 'value'
-```
+
+    ```lua
+    print(db.book.key) -- prints 'value'
+    ```
 
 5. Save to file
-```lua
-db:save()
--- 'book' will be saved to './db/book'
-```
+
+    ```lua
+    db:save()
+    -- 'book' will be saved to './db/book'
+    ```
 
 More usage can be found in the *cli.lua*(a Redis-like command line interface example using FlatDB).
 
