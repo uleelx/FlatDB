@@ -93,24 +93,12 @@ local function common_log(logger, level, message)
 	end
 end
 
-flatdb.hack.debug = function(logger, msg)
-	common_log(logger, "debug", msg)
-end
+local levels = {"debug", "info", "warn", "error", "fatal"}
 
-flatdb.hack.info = function(logger, msg)
-	common_log(logger, "info", msg)
-end
-
-flatdb.hack.warn = function(logger, msg)
-	common_log(logger, "warn", msg)
-end
-
-flatdb.hack.error = function(logger, msg)
-	common_log(logger, "error", msg)
-end
-
-flatdb.hack.fatal = function(logger, msg)
-	common_log(logger, "fatal", msg)
+for _, level in ipairs(levels) do
+	flatdb.hack[level] = function(logger, msg)
+		common_log(logger, level, msg)
+	end
 end
 
 flatdb.hack.find = function(logger, level, date)
