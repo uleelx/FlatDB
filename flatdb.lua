@@ -9,16 +9,16 @@ local function isDir(path)
 	return lfs.attributes(path, "mode") == "directory"
 end
 
-local function load_book(path)
+local function load_page(path)
 	return dofile(path)
 end
 
-local function store_book(path, book)
-	if type(book) == "table" then
+local function store_page(path, page)
+	if type(page) == "table" then
 		local f = io.open(path, "wb")
 		if f then
 			f:write("return ")
-			f:write(pp.format(book))
+			f:write(pp.format(page))
 			f:close()
 			return true
 		end
@@ -29,16 +29,16 @@ end
 local pool = {}
 
 local db_funcs = {
-	save = function(db, bk)
-		if bk then
-			if type(bk) == "string" and type(db[bk]) == "table" then
-				return store_book(pool[db].."/"..bk, db[bk])
+	save = function(db, p)
+		if p then
+			if type(p) == "string" and type(db[p]) == "table" then
+				return store_page(pool[db].."/"..p, db[p])
 			else
 				return false
 			end
 		end
-		for bk, book in pairs(db) do
-			store_book(pool[db].."/"..bk, book)
+		for p, page in pairs(db) do
+			store_page(pool[db].."/"..p, page)
 		end
 		return true
 	end
@@ -48,7 +48,7 @@ local mt = {
 	__index = function(db, k)
 		if db_funcs[k] then return db_funcs[k] end
 		if isFile(pool[db].."/"..k) then
-			db[k] = load_book(pool[db].."/"..k)
+			db[k] = load_page(pool[db].."/"..k)
 		end
 		return rawget(db, k)
 	end

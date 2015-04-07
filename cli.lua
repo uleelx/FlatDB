@@ -22,7 +22,7 @@ local function split(s, sep, maxsplit, plain)
 end
 
 local db = assert(flatdb("./db"))
-local book = "0"
+local page = "0"
 
 local function handle(input)
 	local c = split(input, " ", 2)
@@ -41,59 +41,59 @@ local function handle(input)
 			end
 		end
 		if db[key] then
-			book = key
+			page = key
 			print("OK")
 		else
 			print("ERROR")
 		end
 	elseif cmd == "GET" then
-		print(pp.format(db[book][key]))
+		print(pp.format(db[page][key]))
 	elseif cmd == "SET" then
 		local ok, tmp = pcall(load("return "..tostring(value), "=(load)", "t", db))
-		db[book][key] = ok and tmp or value
+		db[page][key] = ok and tmp or value
 		print("OK")
 	elseif cmd == "INCR" then
-		if not db[book][key] then
-			db[book][key] = 0
+		if not db[page][key] then
+			db[page][key] = 0
 		end
-		db[book][key] = db[book][key] + 1
+		db[page][key] = db[page][key] + 1
 		print("OK")
 	elseif cmd == "DECR" then
-		if not db[book][key] then
-			db[book][key] = 0
+		if not db[page][key] then
+			db[page][key] = 0
 		end
-		db[book][key] = db[book][key] - 1
+		db[page][key] = db[page][key] - 1
 		print("OK")
 	elseif cmd == "RPUSH" then
-		if not db[book][key] then
-			db[book][key] = {}
+		if not db[page][key] then
+			db[page][key] = {}
 		end
-		table.insert(db[book][key], value)
-		print(#db[book][key])
+		table.insert(db[page][key], value)
+		print(#db[page][key])
 	elseif cmd == "LPUSH" then
-		if not db[book][key] then
-			db[book][key] = {}
+		if not db[page][key] then
+			db[page][key] = {}
 		end
-		table.insert(db[book][key], 1, value)
-		print(#db[book][key])
+		table.insert(db[page][key], 1, value)
+		print(#db[page][key])
 	elseif cmd == "RPOP" then
-		if not db[book][key] then
-			db[book][key] = {}
+		if not db[page][key] then
+			db[page][key] = {}
 		end
-		print(table.remove(db[book][key], value))
+		print(table.remove(db[page][key], value))
 	elseif cmd == "LPOP" then
-		if not db[book][key] then
-			db[book][key] = {}
+		if not db[page][key] then
+			db[page][key] = {}
 		end
-		print(table.remove(db[book][key], 1))
+		print(table.remove(db[page][key], 1))
 	elseif cmd == "LLEN" then
-		print(db[book][key] and #db[book][key] or 0)
+		print(db[page][key] and #db[page][key] or 0)
 	elseif cmd == "LINDEX" then
-		if db[book][key] then
+		if db[page][key] then
 			local i = tonumber(value)
-			if i < 0 then i = i + #db[book][key] end
+			if i < 0 then i = i + #db[page][key] end
 			i = i + 1
-			print(db[book][key][i])
+			print(db[page][key][i])
 		else
 			print("nil")
 		end
@@ -106,7 +106,7 @@ local function main()
 	end
 	io.stdout:setvbuf("no")
 	while true do
-		local prefix = book == "0" and "" or ("["..book.."]")
+		local prefix = page == "0" and "" or ("["..page.."]")
 		io.write("flatdb"..prefix.."> ")
 		local input = io.read("*l")
 		if string.upper(input) == "EXIT" or string.upper(input) == "QUIT" then

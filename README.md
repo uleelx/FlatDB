@@ -16,7 +16,7 @@ Concept
 |     FlatDB     |      Disk     |       Lua      |
 |:--------------:|:-------------:|:--------------:|
 | Database       | Directory     | Table          |
-| Book           | File          | Table          |
+| Page           | File          | Table          |
 | Key-value pair | File content  | Key-value pair |
 
 Keys and values can be all Lua types except coroutines, userdata, cdata and C functions.
@@ -36,32 +36,32 @@ local flatdb = require 'flatdb'
     local db = flatdb('./db')
     ```
 
-2. Open or create a book
+2. Open or create a page
 
     ```lua
-    if not db.book then
-    	db.book = {}
+    if not db.page then
+    	db.page = {}
     end
     ```
 
 3. Store key-value items
 
     ```lua
-    db.book.key = 'value'
-    -- equivalent to db.book['key'] = 'value'
+    db.page.key = 'value'
+    -- equivalent to db.page['key'] = 'value'
     ```
 
 4. Retrieve items
 
     ```lua
-    print(db.book.key) -- prints 'value'
+    print(db.page.key) -- prints 'value'
     ```
 
 5. Save to file
 
     ```lua
     db:save()
-    -- 'book' will be saved to './db/book'
+    -- 'page' will be saved to './db/page'
     ```
 
 More usage can be found in the *cli.lua*(a Redis-like command line interface example using FlatDB).
@@ -73,21 +73,21 @@ Quick Look
 local flatdb = require("flatdb")
 
 -- open a directory as a database
--- 'db' is just a plain empty Lua table that can contain books
+-- 'db' is just a plain empty Lua table that can contain pages
 local db = flatdb("./db")
 
--- open or create a book named "default"
+-- open or create a page named "default"
 -- it is also a plain empty Lua table where key-value pair stored in
 if not db.default then
 	db.default = {}
 end
 
--- extend db methods for getting values from 'default' book
+-- extend db methods for getting values from 'default' page
 flatdb.hack.get = function(db, key)
 	return db.default[key]
 end
 
--- extend db methods for setting values to 'default' book
+-- extend db methods for setting values to 'default' page
 flatdb.hack.set = function(db, key, value)
 	db.default[key] = value
 end
@@ -97,21 +97,21 @@ flatdb.hack.guard = function(db, f)
 	setmetatable(db.default, {__newindex = f})
 end
 
--- get key-value data from 'default' book
+-- get key-value data from 'default' page
 print(db:get("hello"))
 
--- set key-value data to 'default' book
+-- set key-value data to 'default' page
 db:set("hello", "world")
 
--- get key-value data from 'default' book
+-- get key-value data from 'default' page
 print(db:get("hello"))
 
 -- set guard function
-db:guard(function(book, key, value)
+db:guard(function(page, key, value)
 	print("CREATE KEY permission denied!")
 end)
 
--- try creating new key-value pair to 'default' book
+-- try creating new key-value pair to 'default' page
 db:set("key1", 1)
 db:set("key2", 2)
 
@@ -122,7 +122,7 @@ print(db:get("key1")) -- prints nil
 print(db:get("key2")) -- prints nil
 print(db:get("hello")) -- prints 'bye'
 
--- store 'default' book to './db/default' file
+-- store 'default' page to './db/default' file
 db:save()
 
 ```
@@ -136,15 +136,15 @@ API
 
       Bind a directory as a database, returns nil if 'dir' doesn't exists. Otherwise, it returns a 'db' obeject.
 
-  - **db:save([book])**
+  - **db:save([page])**
 
-      Save all books or the given book(if specified) contained in db to file. The 'book' argument is a string, the book's name.
+      Save all pages or the given page(if specified) contained in db to file. The 'page' argument is a string, the page's name.
 
 - **Tables**
 
   - **flatdb.hack**
 
-      The 'hack' table contains db's methods. There is only one method 'save(db, book)' in it by default.
+      The 'hack' table contains db's methods. There is only one method 'save(db, page)' in it by default.
       It is usually used to extend db methods.
 
 Dependencies
