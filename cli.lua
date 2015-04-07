@@ -24,17 +24,25 @@ end
 local db = assert(flatdb("./db"))
 local page = "0"
 
-local function handle(input)
-	local c = split(input, " ", 2)
-	local cmd, key, value = string.upper(c[1]), c[2], c[3]
-	if cmd == "SAVE" then
+local COMMANDS = {
+	SAVE = function(key)
 		print(db:save(key) and "OK" or "ERROR")
-	elseif cmd == "TOUCH" then
+	end,
+	TOUCH = function(key)
+		if not key then
+			print("USAGE: TOUCH page")
+			return
+		end
 		if not db[key] then
 			db[key] = {}
 		end
 		print("OK")
-	elseif cmd == "SELECT" then
+	end,
+	SELECT = function(key)
+		if not key then
+			print("USAGE: SELECT page")
+			return
+		end
 		if tonumber(key) and tonumber(key) < 16 then
 			if not db[key] then
 				db[key] = {}
@@ -44,51 +52,103 @@ local function handle(input)
 			page = key
 			print("OK")
 		else
-			print("ERROR")
+			print("ERROR: database not found, try using 'TOUCH' command first")
 		end
-	elseif cmd == "GET" then
+	end,
+	GET = function(key)
+		if not key then
+			print("USAGE: GET key")
+			return
+		end
 		print(pp.format(db[page][key]))
-	elseif cmd == "SET" then
+	end,
+	SET = function(key, value)
+		if not key then
+			print("USAGE: SET key value")
+			return
+		end
 		local ok, tmp = pcall(load("return "..tostring(value), "=(load)", "t", db))
 		db[page][key] = ok and tmp or value
 		print("OK")
-	elseif cmd == "INCR" then
+	end,
+	INCR = function(key)
+		if not key then
+			print("USAGE: INCR key")
+			return
+		end
 		if not db[page][key] then
 			db[page][key] = 0
 		end
 		db[page][key] = db[page][key] + 1
 		print("OK")
-	elseif cmd == "DECR" then
+	end,
+	DECR = function(key)
+		if not key then
+			print("USAGE: DECR key")
+			return
+		end
 		if not db[page][key] then
 			db[page][key] = 0
 		end
 		db[page][key] = db[page][key] - 1
 		print("OK")
-	elseif cmd == "RPUSH" then
+	end,
+	RPUSH = function(key, value)
+		if not key then
+			print("USAGE: RPUSH list value")
+			return
+		end
 		if not db[page][key] then
 			db[page][key] = {}
 		end
 		table.insert(db[page][key], value)
 		print(#db[page][key])
-	elseif cmd == "LPUSH" then
+	end,
+	LPUSH = function(key, value)
+		if not key then
+			print("USAGE: LPUSH list value")
+			return
+		end
 		if not db[page][key] then
 			db[page][key] = {}
 		end
 		table.insert(db[page][key], 1, value)
 		print(#db[page][key])
-	elseif cmd == "RPOP" then
-		if not db[page][key] then
-			db[page][key] = {}
+	end,
+	RPOP = function(key)
+		if not key then
+			print("USAGE: RPOP list")
+			return
 		end
-		print(table.remove(db[page][key], value))
-	elseif cmd == "LPOP" then
-		if not db[page][key] then
-			db[page][key] = {}
+		if db[page][key] then
+			print(table.remove(db[page][key]))
+		else
+			print("nil")
 		end
-		print(table.remove(db[page][key], 1))
-	elseif cmd == "LLEN" then
+	end,
+	LPOP = function(key)
+		if not key then
+			print("USAGE: LPOP list")
+			return
+		end
+		if db[page][key] then
+			print(table.remove(db[page][key], 1))
+		else
+			print("nil")
+		end
+	end,
+	LLEN = function(key)
+		if not key then
+			print("USAGE: LLEN list")
+			return
+		end
 		print(db[page][key] and #db[page][key] or 0)
-	elseif cmd == "LINDEX" then
+	end,
+	LINDEX = function(key, value)
+		if not key and not value then
+			print("USAGE: LINDEX list index")
+			return
+		end
 		if db[page][key] then
 			local i = tonumber(value)
 			if i < 0 then i = i + #db[page][key] end
@@ -97,6 +157,16 @@ local function handle(input)
 		else
 			print("nil")
 		end
+	end
+}
+
+local function handle(input)
+	local c = split(input, " ", 2)
+	local cmd, key, value = string.upper(c[1]), c[2], c[3]
+	if COMMANDS[cmd] then
+		COMMANDS[cmd](key, value)
+	else
+		print("ERROR: command not found")
 	end
 end
 
