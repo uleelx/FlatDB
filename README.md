@@ -70,60 +70,65 @@ Quick Look
 ==========
 
 ```lua
+-- This is an logging system example using FlatDB
+
 local flatdb = require("flatdb")
 
--- open a directory as a database
--- 'db' is just a plain empty Lua table that can contain pages
-local db = flatdb("./db")
+local logger = flatdb("./log")
 
--- open or create a page named "default"
--- it is also a plain empty Lua table where key-value pair stored in
-if not db.default then
-	db.default = {}
+local count = 0
+
+local function common_log(logger, level, message)
+	local today = os.date("%Y-%m-%d")
+	if logger[today] == nil then logger[today] = {} end
+	if logger[today][level] == nil then logger[today][level] = {} end
+	table.insert(logger[today][level], {
+		timestamp = os.time(),
+		level = level,
+		message = message
+	})
+	count = (count+1)%10
+	if count == 0 then
+		logger:save()
+	end
 end
 
--- extend db methods for getting values from 'default' page
-flatdb.hack.get = function(db, key)
-	return db.default[key]
+flatdb.hack.debug = function(logger, msg)
+	common_log(logger, "debug", msg)
 end
 
--- extend db methods for setting values to 'default' page
-flatdb.hack.set = function(db, key, value)
-	db.default[key] = value
+flatdb.hack.info = function(logger, msg)
+	common_log(logger, "info", msg)
 end
 
--- extend db methods for watching new key
-flatdb.hack.guard = function(db, f)
-	setmetatable(db.default, {__newindex = f})
+flatdb.hack.warn = function(logger, msg)
+	common_log(logger, "warn", msg)
 end
 
--- get key-value data from 'default' page
-print(db:get("hello"))
+flatdb.hack.error = function(logger, msg)
+	common_log(logger, "error", msg)
+end
 
--- set key-value data to 'default' page
-db:set("hello", "world")
+flatdb.hack.fatal = function(logger, msg)
+	common_log(logger, "fatal", msg)
+end
 
--- get key-value data from 'default' page
-print(db:get("hello"))
+flatdb.hack.find = function(logger, level, date)
+	if logger[date or os.date("%Y-%m-%d")] then
+		return logger[date or os.date("%Y-%m-%d")][level]
+	end
+end
 
--- set guard function
-db:guard(function(page, key, value)
-	print("CREATE KEY permission denied!")
-end)
+for i = 1, 10 do
+	logger:debug("This is a debug message.")
+	logger:info("This is an info message.")
+	logger:warn("This is a warn message.")
+	logger:error("This is an error message.")
+	logger:fatal("This is a fatal message.")
+end
 
--- try creating new key-value pair to 'default' page
-db:set("key1", 1)
-db:set("key2", 2)
-
--- update an existing key-value pair
-db:set("hello", "bye")
-
-print(db:get("key1")) -- prints nil
-print(db:get("key2")) -- prints nil
-print(db:get("hello")) -- prints 'bye'
-
--- store 'default' page to './db/default' file
-db:save()
+local pp = require("pp")
+pp(logger:find("error"))
 
 ```
 
@@ -141,6 +146,14 @@ API
       Save all pages or the given page(if specified) contained in db to file. The 'page' argument is a string, the page's name.
 
 - **Tables**
+
+  - **flatdb**
+
+      When a db is loaded, there is two relations below:
+
+      *flatdb[dir] --> db*
+
+      *flatdb[db] --> dir*
 
   - **flatdb.hack**
 
