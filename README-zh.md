@@ -156,7 +156,6 @@ API
 =======
 
 - [pp](https://github.com/luapower/pp)
-- [lfs](http://keplerproject.github.io/luafilesystem/)
 
 以上的依赖库都可以在[LuaPower](https://luapower.com/)上找到。
 
