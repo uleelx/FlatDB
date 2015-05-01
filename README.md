@@ -152,7 +152,6 @@ Dependencies
 =======
 
 - [pp](https://github.com/luapower/pp)
-- [lfs](http://keplerproject.github.io/luafilesystem/)
 
 All above libraries can be found in [LuaPower](https://luapower.com/).
 

@@ -1,12 +1,23 @@
-local lfs = require("lfs")
 local pp = require("pp")
 
 local function isFile(path)
-	return lfs.attributes(path, "mode") == "file"
+	local f = io.open(path, "r")
+	if f then
+		f:close()
+		return true
+	end
+	return false
 end
 
 local function isDir(path)
-	return lfs.attributes(path, "mode") == "directory"
+	local tmp = path.."/"..os.tmpname()
+	local f = io.open(tmp, "w")
+	if f then
+		f:close()
+		os.remove(tmp)
+		return true
+	end
+	return false
 end
 
 local function load_page(path)
@@ -38,7 +49,9 @@ local db_funcs = {
 			end
 		end
 		for p, page in pairs(db) do
-			store_page(pool[db].."/"..p, page)
+			if not store_page(pool[db].."/"..p, page) then
+				return false
+			end
 		end
 		return true
 	end
@@ -59,8 +72,8 @@ pool.hack = db_funcs
 return setmetatable(pool, {
 	__mode = "kv",
 	__call = function(pool, path)
+		assert(isDir(path), path.." is not a directory.")
 		if pool[path] then return pool[path] end
-		if not isDir(path) then return end
 		local db = {}
 		setmetatable(db, mt)
 		pool[path] = db
