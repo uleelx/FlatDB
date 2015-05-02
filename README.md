@@ -64,7 +64,7 @@ local flatdb = require 'flatdb'
     -- 'page' will be saved to './db/page'
     ```
 
-More usage can be found in the *cli.lua*(a Redis-like command line interface example using FlatDB).
+More usage can be found in the [Ledis](https://github.com/uleelx/ledis)(an alternative of Redis server using FlatDB).
 
 Quick Look
 ==========
@@ -151,9 +151,7 @@ API
 Dependencies
 =======
 
-- [pp](https://github.com/luapower/pp)
-
-All above libraries can be found in [LuaPower](https://luapower.com/).
+- [lua-MessagePack](https://github.com/fperrad/lua-MessagePack)
 
 License
 =======

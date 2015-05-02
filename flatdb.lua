@@ -1,4 +1,4 @@
-local pp = require("pp")
+local mp = require("MessagePack")
 
 local function isFile(path)
 	local f = io.open(path, "r")
@@ -21,15 +21,20 @@ local function isDir(path)
 end
 
 local function load_page(path)
-	return dofile(path)
+	local ret
+	local f = io.open(path, "rb")
+	if f then
+		ret = mp.unpack(f:read("*a"))
+		f:close()
+	end
+	return ret
 end
 
 local function store_page(path, page)
 	if type(page) == "table" then
 		local f = io.open(path, "wb")
 		if f then
-			f:write("return ")
-			f:write(pp.format(page))
+			f:write(mp.pack(page))
 			f:close()
 			return true
 		end

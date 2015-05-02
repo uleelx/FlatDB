@@ -68,7 +68,7 @@ local flatdb = require 'flatdb'
     -- 'page' will be saved to './db/page'
     ```
 
-更多用法可参考本项目中的*cli.lua*（一个用FlatDB模拟的类Redis命令行客户端例子）。
+更多用法可参考另一个项目[Ledis](https://github.com/uleelx/ledis)（一个使用FlatDB作为存储后端的Redis实现）。
 
 范例概览
 ==========
@@ -155,9 +155,7 @@ API
 依赖项
 =======
 
-- [pp](https://github.com/luapower/pp)
-
-以上的依赖库都可以在[LuaPower](https://luapower.com/)上找到。
+- [lua-MessagePack](https://github.com/fperrad/lua-MessagePack)
 
 许可证
 =======
