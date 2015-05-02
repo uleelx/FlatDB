@@ -115,7 +115,7 @@ for i = 1, 10 do
 	logger:fatal("This is a fatal message.")
 end
 
-local pp = require("pp")
+local pp = require("pp") -- https://github.com/luapower/pp
 pp(logger:find("error"))
 
 ```
