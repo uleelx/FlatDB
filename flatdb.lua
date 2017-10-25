@@ -10,11 +10,9 @@ local function isFile(path)
 end
 
 local function isDir(path)
-	local tmp = path.."/"..os.tmpname()
-	local f = io.open(tmp, "w")
-	if f then
-		f:close()
-		os.remove(tmp)
+	path = string.gsub(path.."/", "//", "/")
+	local ok, err, code = os.rename(path, path)
+	if ok or code == 13 then
 		return true
 	end
 	return false
