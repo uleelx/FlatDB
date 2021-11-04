@@ -156,4 +156,4 @@ Dependencies
 License
 =======
 
-FlatDB is distributed under the MIT license.
+FlatDB is distributed under the MIT license, like Lua itself.
