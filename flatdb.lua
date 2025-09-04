@@ -3,8 +3,8 @@
 -- Original by uleelx, refactored to use JSON and improve code quality.
 
 local flatdb = {}
-local db_pool = {} -- Caches DB objects by path: { [path] = db_table }
-local path_pool = {} -- Maps DB objects back to their path: { [db_table] = path }
+local db_pool = setmetatable({}, {__mode = "v"}) -- Caches DB objects by path: { [path] = db_table }
+local path_pool = setmetatable({}, {__mode = "k"}) -- Maps DB objects back to their path: { [db_table] = path }
 local db_methods = {} -- Holds methods for DB objects, accessible via flatdb.hack
 
 
