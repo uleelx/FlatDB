@@ -164,6 +164,13 @@ setmetatable(flatdb, {
         path_pool[db] = path
 
         return db
+    end,
+    -- Allow access loaded database by table reference: `flatdb[db] --> dir`
+    -- Or by the directory: `flatdb[dir] --> db`.
+    -- Returns nil if table is not loaded or get dereferenced by garbage collector.
+    __index = function(_, ref)
+        -- Prioritize table (database) over string (directory).
+        return path_pool[ref] or db_pool[ref]
     end
 })
 
