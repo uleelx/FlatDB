@@ -151,7 +151,7 @@ API
 Dependencies
 =======
 
-- [lua-MessagePack](https://framagit.org/fperrad/lua-MessagePack)
+- [json.lua](https://github.com/rxi/json.lua)
 
 License
 =======

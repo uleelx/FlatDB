@@ -155,7 +155,7 @@ API
 依赖项
 =======
 
-- [lua-MessagePack](https://github.com/fperrad/lua-MessagePack)
+- [json.lua](https://github.com/rxi/json.lua)
 
 许可证
 =======
